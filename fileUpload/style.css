@@ -1,0 +1,20 @@
+
+#images > img::before {
+    content: "x";
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    background: rgba(0,0,0,0.7);
+    transition: 0.5s;
+    top: -100%;
+    left: 100%;
+}
+
+#images > img:hover::before {
+    top: 0%;
+    left: 0%;
+}
