@@ -4,7 +4,7 @@
     include_once("./slider.php");
 
     if(basename($_SERVER['PHP_SELF']) == "index.php") {
-        echo "active"
+        echo "active";
     }else{
         echo null;
     }
