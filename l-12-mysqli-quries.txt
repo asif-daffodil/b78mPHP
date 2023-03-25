@@ -1,0 +1,55 @@
+Database Related Quries:
+CREATE DATABASE test_data
+CREATE DATABASE IF NOT EXISTS test_data
+DROP DATABASE test_data
+DROP DATABASE IF EXISTS test_data
+
+Create Table:
+CREATE TABLE IF NOT EXISTS products (
+	id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    	name VARCHAR(100),
+    	company VARCHAR (100),
+    	price INT (11),
+    	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+
+Inser Data:
+INSERT INTO `b78m`.`products` (`name`, `company`, `price`) VALUES ('SEO Short Curse', 'Legend Killer', '5000')
+INSERT INTO `b78m`.`products` (`products`.`name`, `products`.`company`, `products`.`price`) VALUES ('Frontend Web Development', 'Legend Killer', '5000');
+INSERT INTO `b78m`.`products` (`products`.`name`, `products`.`company`, `products`.`price`) VALUES 
+('React', 'Legend Killer', '3000'),
+('Bassic', 'Legend Killer', '3000'),
+('Laravel', 'Legend Killer', '5000')
+
+Select Data:
+SELECT * FROM `products`
+SELECT * FROM `b78m`.`products`;
+SELECT name, price FROM `b78m`.`products`;
+SELECT `name`, `price` FROM `b78m`.`products`;
+SELECT `products`.`name`, `products`.`price` FROM `b78m`.`products`;
+SELECT `b78m`.`products`.`name`, `b78m`.`products`.`price` FROM `b78m`.`products`;
+SELECT `b78m`.`products`.`name` AS `Product Name`, `b78m`.`products`.`price` AS `Product Price` FROM `b78m`.`products`;
+SELECT `b78m`.`products`.`name` AS `Product Name`, `b78m`.`products`.`price` AS `Product Price` FROM `b78m`.`products` WHERE `b78m`.`products`.`company` = 'Legend Killer'
+SELECT name AS `Product Name`, price AS `Product Price` FROM products WHERE company = 'Legend Killer';
+SELECT `b78m`.`products`.`name` AS `Product Name`, `b78m`.`products`.`price` AS `Product Price` FROM `b78m`.`products` WHERE `b78m`.`products`.`company` = 'Legend Killer' AND `b78m`.`products`.`id` < 20
+UPDATE `products` SET `name` = 'Search Engine Optimaization' WHERE `id` = 1
+DELETE FROM `products` WHERE `id` = 2
+ALTER TABLE `products` CHANGE `name` `product name` VARCHAR(100)
+ALTER TABLE `products` ADD `teacher` VARCHAR(100) AFTER `price`
+ALTER TABLE `products` CHANGE `teacher` `teacher` INT(11)
+DROP TABLE `products`
+ALTER TABLE `subjects` ADD FOREIGN KEY (`teacher id`) REFERENCES `teachers`(`id`)
+
+SELECT `students`.`name` AS `Studen Name`, 
+`students`.`gender` AS `Student Gender`, 
+`students`.`mobile` AS `Student Contact`, 
+`subjects`.`name` AS 'Subject Name', 
+`teachers`.`name` AS `Teacher Name` 
+FROM `students` 
+INNER JOIN `subjects` 
+ON `students`.`subject_id` = `subjects`.`id` 
+INNER JOIN `teachers` 
+ON `subjects`.`teacher id` = `teachers`.`id` 
+WHERE `teachers`.`gender` = 'Male' AND `subjects`.`id` < 20
+
+SELECT * FROM `students` WHERE `gender` LIKE '%ale%';
