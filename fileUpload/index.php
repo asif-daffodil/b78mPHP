@@ -34,46 +34,54 @@
 error_reporting(E_ERROR | E_PARSE);
 if (isset($_POST["uimgbtn"])) {
 
-    $fname = $_FILES["myPic"]["name"];
+    $fnames = $_FILES["myPic"]["name"];
     $tmpname = $_FILES["myPic"]["tmp_name"];
 
-    if (empty($fname)) {
-        $err = "<span style='color: red'>Please write your name</span>";
-    } elseif (!getimagesize($tmpname)) {
-        $err = "<span style='color: red'>Invalid image file</span>";
-    } else {
-        if (!is_dir("./uploads")) {
-            mkdir("./uploads");
-        }
-        $ext = pathinfo($fname, PATHINFO_EXTENSION);
-        $amarVar = "ABCDEFFGHIJKLMOPQRSTUVWXYZabcdefghijklmmnopqrstuvwxyz0123456789";
-        $amarVar = str_shuffle($amarVar);
-        $amarVar = strrev($amarVar);
-        $amarVar =  substr($amarVar, -6);
-        $amarVar = uniqid("a") . str_shuffle($amarVar . rand() . date("FdYDlhisHaA")) . "." . $ext;
-
-        $muf = move_uploaded_file($tmpname, "./uploads/$amarVar");
-        if (!$muf) {
-            $err = "<span style='color: red'>File upload fail!</span>";
+    $x = 0;
+    foreach($fnames as $fname){
+        if (empty($fname)) {
+            $errs[] = "<span style='color: red'>Please write your name</span>";
+        } elseif (!getimagesize($tmpname[$x])) {
+            $errs[] = "<span style='color: red'>Invalid image file</span>";
         } else {
-            echo "<script>alert('File Uploaded Successfully')</script>";
+            if (!is_dir("./uploads")) {
+                mkdir("./uploads");
+            }
+            $ext = pathinfo($fname, PATHINFO_EXTENSION);
+            $amarVar = "ABCDEFFGHIJKLMOPQRSTUVWXYZabcdefghijklmmnopqrstuvwxyz0123456789";
+            $amarVar = str_shuffle($amarVar);
+            $amarVar = strrev($amarVar);
+            $amarVar =  substr($amarVar, -6);
+            $amarVar = uniqid("a") . str_shuffle($amarVar . rand() . date("FdYDlhisHaA")) . "." . $ext;
+    
+            $muf = move_uploaded_file($tmpname[$x], "./uploads/$amarVar");
+            if (!$muf) {
+                $errs[] = "<span style='color: red'>File upload fail!</span>";
+            } else {
+                $errs[] = "<span style='color: green'>Image uploaded successfully</span>";
+            }
         }
+        $x++;
     }
 }
 ?>
 
 <form action="" method="post" enctype="multipart/form-data">
-    <input type="file" name="myPic" multiple>
+    <input type="file" name="myPic[]" multiple>
     <button type="submit" name="uimgbtn">Upload Image</button>
 </form>
 
 
-<?= $err ?? null ?>
+<?php
+foreach($errs as $err){
+    echo "$err <br>";
+}
+?>
 
 <div id="images"></div>
 
 <script>
-    const myPic = document.getElementsByName("myPic")[0];
+    const myPic = document.getElementsByName("myPic[]")[0];
     const images = document.getElementById("images");
 
     myPic.addEventListener("change", () => {
