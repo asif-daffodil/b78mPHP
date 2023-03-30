@@ -1,6 +1,7 @@
 <?php
 $select_teachers = $conn = null;
-function seam () {
+function seam()
+{
     $GLOBALS['conn'] = mysqli_connect("localhost", "root", "", "b78m");
     $GLOBALS['select_teachers'] = $GLOBALS['conn']->query("SELECT * FROM `teachers`");
 }
@@ -14,7 +15,7 @@ function safuda($data)
     $data = stripslashes($data);
     return $data;
 }
-
+$pageName = basename($_SERVER['PHP_SELF']);
 $genderList = ["Male", "Female"];
 
 if (isset($_POST['addTeacher'])) {
@@ -26,7 +27,7 @@ if (isset($_POST['addTeacher'])) {
     } elseif (!preg_match('/^[A-Za-z. ]*$/', $tname)) {
         $errName = "Invalid name format";
     } else {
-        $crrName = $conn->real_escape_string($tname);
+        $crrName = $GLOBALS['conn']->real_escape_string($tname);
     }
 
     if (empty($gender)) {
@@ -34,14 +35,14 @@ if (isset($_POST['addTeacher'])) {
     } elseif (!in_array($gender, $genderList)) {
         $errGender = "Paknami bondho korun!";
     } else {
-        $crrGender = $conn->real_escape_string($gender);
+        $crrGender = $GLOBALS['conn']->real_escape_string($gender);
     }
 
     if (isset($crrName) && isset($crrGender)) {
-        $insert = $conn->query("INSERT INTO `teachers` (`name`, `gender`) VALUES ('$crrName', '$crrGender')");
+        $insert = $GLOBALS['conn']->query("INSERT INTO `teachers` (`name`, `gender`) VALUES ('$crrName', '$crrGender')");
         if (!$insert) {
             $msg = '<div class="alert alert-danger alert-dismissible fade show" role="alert">Something went wrong!<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
-        }else{
+        } else {
             $msg = '<div class="alert alert-success alert-dismissible fade show" role="alert">Teacher added successfully!<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
             $tname = $gender = null;
             seam();
@@ -103,6 +104,15 @@ if (isset($_POST['addTeacher'])) {
             </div>
             <div class="col-md-8  p-3">
                 <div class="border shadow rounded my-3  p-3">
+                <?php 
+                $totalData = $GLOBALS['select_teachers']->num_rows;
+                    if($totalData > 0){
+                        $pageno = $_GET['pageno'] ?? header("location: $pageName?pageno=1");
+                        $dataPerPage = 5;
+                        $totalPage = ceil($totalData / $dataPerPage);
+                        $startPoint = ($pageno - 1) * $dataPerPage;
+                        $GLOBALS['select_teachers'] =  $GLOBALS['conn']->query("SELECT * FROM `teachers` ORDER BY `id` DESC LIMIT $startPoint, $dataPerPage");
+                ?>
                     <table class="table">
                         <tr>
                             <th>ID</th>
@@ -111,9 +121,11 @@ if (isset($_POST['addTeacher'])) {
                             <th>Created At</th>
                             <th>Action</th>
                         </tr>
-                        <?php while ($select_teacher = $select_teachers->fetch_object()) { ?>
+                        <?php 
+                        $x = $startPoint + 1; 
+                        while ($select_teacher = $GLOBALS['select_teachers']->fetch_object()) { ?>
                             <tr>
-                                <td><?= $select_teacher->id; ?></td>
+                                <td><?= $x++ ?></td>
                                 <td><?= $select_teacher->name; ?></td>
                                 <td><?= $select_teacher->gender; ?></td>
                                 <td>
@@ -125,7 +137,22 @@ if (isset($_POST['addTeacher'])) {
                                 </td>
                             </tr>
                         <?php } ?>
+                        
                     </table>
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                            <li class="page-item <?= $pageno == 1 ? "disabled":null ?>"><a class="page-link" href="<?= "$pageName?pageno=".($pageno != 1 ? $pageno-1:1) ?>">Previous</a></li>
+                            <?php 
+                            for ($i=1; $i <= $totalPage; $i++) { 
+                             ?>
+                            <li class="page-item"><a class="page-link" href="<?= "$pageName?pageno=$i" ?>"><?= $i ?></a></li>
+                            <?php } ?>
+                            <li class="page-item <?= $pageno == $totalPage ? "disabled":null ?>"><a class="page-link" href="<?= "$pageName?pageno=".($pageno != $totalPage ? $pageno+1:$totalPage) ?>">Next</a></li>
+                        </ul>
+                    </nav>
+                    <?php }else{ ?>
+                        <h2 class="alert alert-danger">No result Found!</h2>
+                        <?php } ?>
                 </div>
 
             </div>
