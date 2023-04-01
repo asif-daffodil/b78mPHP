@@ -141,12 +141,49 @@ if (isset($_POST['addTeacher'])) {
                     </table>
                     <nav aria-label="Page navigation example">
                         <ul class="pagination">
+                            <!-- previous -->
                             <li class="page-item <?= $pageno == 1 ? "disabled":null ?>"><a class="page-link" href="<?= "$pageName?pageno=".($pageno != 1 ? $pageno-1:1) ?>">Previous</a></li>
+
+                            <!-- conditional first one -->
                             <?php 
-                            for ($i=1; $i <= $totalPage; $i++) { 
-                             ?>
-                            <li class="page-item"><a class="page-link" href="<?= "$pageName?pageno=$i" ?>"><?= $i ?></a></li>
+                            if($totalPage > 5 && $pageno > 5){ 
+                            ?>
+                                <li class="page-item"><a class="page-link" href="<?= "$pageName?pageno=1" ?>"><?= 1 ?></a></li>
+                                <span class="page-item page-link border-0">...</span>
                             <?php } ?>
+
+                            <?php 
+
+                            if($pageno <= 5){
+                                $x = 1;
+                            }elseif($pageno > 5){
+                                $x = $pageno - 1;
+                            }else{
+                                $x = $pageno;
+                            }
+                            $z = 5;
+                            if($totalPage - 5 > 0 && $pageno > $totalPage - 5){
+                                $x = $totalPage - 5;
+                                $z = 7;
+                            }
+                            $y = 1;
+                            
+                            for ($i=$x; $i <= $totalPage; $i++) { 
+                                if($y <= $z){
+                             ?>
+
+                            <li class="page-item <?= $i == $pageno ? 'active':null; ?> "><a class="page-link" href="<?= "$pageName?pageno=$i" ?>"><?= $i ?></a></li>
+                            
+                            <?php $y++; $x++;} } ?>
+
+                            <!-- conditional last one -->
+                            <?php 
+                            if($x-1 < $totalPage){ 
+                            ?>
+                                <span class="page-item page-link border-0">...</span>
+                                <li class="page-item"><a class="page-link" href="<?= "$pageName?pageno=".$totalPage ?>"><?= $totalPage ?></a></li>
+                            <?php } ?>
+
                             <li class="page-item <?= $pageno == $totalPage ? "disabled":null ?>"><a class="page-link" href="<?= "$pageName?pageno=".($pageno != $totalPage ? $pageno+1:$totalPage) ?>">Next</a></li>
                         </ul>
                     </nav>
