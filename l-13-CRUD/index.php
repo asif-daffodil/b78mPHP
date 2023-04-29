@@ -1,4 +1,11 @@
 <?php
+include_once("./header.php");
+if(!isset($_SESSION['uinfo'])){
+    header("location: ./login.php");
+}else{
+    $pageno = $_GET['pageno'] ?? header("location: $pageName?pageno=1");
+}
+
 $select_teachers = $conn = null;
 function seam()
 {
@@ -49,24 +56,13 @@ if (isset($_POST['addTeacher'])) {
         }
     }
 }
-
-
-
 ?>
-<!DOCTYPE html>
-<html lang='en'>
 
-<head>
-    <meta charset='UTF-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>Bootstrap</title>
-    <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
 
 <body>
-    <div class="container">
+    <div class="container mt-5">
         <div class="row">
+            <?php if($_SESSION['uinfo']['role'] == 'admin'){ ?>
             <div class="col-md-4 p-3">
                 <div class="border shadow rounded my-3 p-3">
                     <h2>Add Teacher</h2>
@@ -102,12 +98,12 @@ if (isset($_POST['addTeacher'])) {
                     </form>
                 </div>
             </div>
+            <?php } ?>
             <div class="col-md-8  p-3">
                 <div class="border shadow rounded my-3  p-3">
                 <?php 
                 $totalData = $GLOBALS['select_teachers']->num_rows;
                     if($totalData > 0){
-                        $pageno = $_GET['pageno'] ?? header("location: $pageName?pageno=1");
                         $dataPerPage = 5;
                         $totalPage = ceil($totalData / $dataPerPage);
                         $startPoint = ($pageno - 1) * $dataPerPage;
@@ -132,8 +128,8 @@ if (isset($_POST['addTeacher'])) {
                                     <?= date('F-d-Y', strtotime($select_teacher->created_at)); ?>
                                 </td>
                                 <td>
-                                    <a class="btn btn-sm btn-warning"><i class="fa-solid fa-pen-to-square"></i></a>
-                                    <a class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i></a>
+                                    <a class="btn btn-sm btn-warning <?= $_SESSION['uinfo']['role'] != 'admin' ? "disabled":null ?>" href="./update.php?id=<?= $select_teacher->id; ?>"><i class="fa-solid fa-pen-to-square"></i></a>
+                                    <a class="btn btn-sm btn-danger <?= $_SESSION['uinfo']['role'] != 'admin' ? "disabled":null ?>" href="./delete.php?id=<?= $select_teacher->id; ?>"><i class="fa-solid fa-trash"></i></a>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -158,18 +154,15 @@ if (isset($_POST['addTeacher'])) {
                                 $x = 1;
                             }elseif($pageno > 5){
                                 $x = $pageno - 1;
-                            }else{
-                                $x = $pageno;
                             }
-                            $z = 5;
+
                             if($totalPage - 5 > 0 && $pageno > $totalPage - 5){
-                                $x = $totalPage - 5;
-                                $z = 7;
+                                $x = $totalPage - 4;
                             }
                             $y = 1;
                             
                             for ($i=$x; $i <= $totalPage; $i++) { 
-                                if($y <= $z){
+                                if($y <= 5){
                              ?>
 
                             <li class="page-item <?= $i == $pageno ? 'active':null; ?> "><a class="page-link" href="<?= "$pageName?pageno=$i" ?>"><?= $i ?></a></li>
@@ -195,7 +188,6 @@ if (isset($_POST['addTeacher'])) {
             </div>
         </div>
     </div>
-    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js'></script>
-</body>
-
-</html>
+    <?php  
+        include_once("./footer.php")
+    ?>
